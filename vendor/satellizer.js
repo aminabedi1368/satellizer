@@ -307,7 +307,6 @@
                 setToken: function (token) { return SatellizerShared.setToken({ access_token: token }); },
                 removeToken: function () { return SatellizerShared.removeToken(); },
                 removeRefreshToken: function () { return SatellizerShared.removeRefreshToken(); },
-                changeToken:function (user, options) {  return SatellizerLocal.changeToken(user, options);  },
                 setStorageType: function (type) { return SatellizerShared.setStorageType(type); }
             };
         };
@@ -412,11 +411,7 @@
         Shared.prototype.getToken = function () {
             return this.SatellizerStorage.get(this.prefixedTokenName);
         };
-
-
-
         Shared.prototype.getRefreshToken = function () {
-            // return this.SatellizerStorage.get("satellizer_refresh_token");
             return this.SatellizerStorage.get(this.prefixedRefreshTokenName);
         };
         Shared.prototype.getPayload = function () {
@@ -433,10 +428,8 @@
         };
         Shared.prototype.setToken = function (response) {
           if(response.access_token){
-            //console.log("response.refresh_token",response.refresh_token);
             this.SatellizerStorage.set(this.prefixedRefreshTokenName, response.refresh_token);
             this.SatellizerStorage.set(this.prefixedTokenName, response.access_token);
-            this.SatellizerStorage.set("access_token", response.access_token);
           }
           else {
             var tokenRoot = this.SatellizerConfig.tokenRoot;
@@ -460,11 +453,8 @@
               token = tokenRootData ? tokenRootData[tokenName] : response.data && response.data[tokenName];
             }
             if (token) {
-              //console.log("set token in sattelizer");
               this.SatellizerStorage.set(this.prefixedRefreshTokenName, response.data.refresh_token);
-              // this.SatellizerStorage.set("satellizer_refresh_token", response.data.refresh_token);
               this.SatellizerStorage.set(this.prefixedTokenName, token);
-              // //console.log("satellizer_access_token",this.SatellizerStorage.get("satellizer_access_token"));
             }
           }
         };
@@ -530,34 +520,8 @@
             options.data = url_encode || options.data;
             options.method = options.method || 'POST';
             options.withCredentials = options.withCredentials || this.SatellizerConfig.withCredentials;
-          //console.log("start api login");
             return this.$http(options).then(function (response) {
-              //console.log("response api login");
                 _this.SatellizerShared.setToken(response);
-                return response;
-            });
-        };
-        Local.prototype.changeToken = function (user, options) {
-            var _this = this;
-            var serialize = function(obj) {
-                var str = [];
-                for(var p in obj)
-                    if (obj.hasOwnProperty(p)) {
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                return str.join("&");
-            };
-            var url_encode = serialize(user);
-            if (options === void 0) { options = {}; }
-
-            options.url = options.url ? options.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.loginUrl);
-            options.data = url_encode || options.data;
-            options.method = options.method || 'POST';
-            options.withCredentials = options.withCredentials || this.SatellizerConfig.withCredentials;
-            return this.$http(options).then(function (response) {
-              //_this.SatellizerStorage.set("satellizer_access_token", response.data.access_token);
-              //
-                _this.SatellizerShared.setToken(response.data);
                 return response;
             });
         };
@@ -630,17 +594,10 @@
                     }
                     try {
                         var popupWindowPath = getFullUrlPath(_this.popup.location);
-                        ////console.log(popupWindowPath ,"aaaaaaa", redirectUriPath )
                         if (popupWindowPath === redirectUriPath) {
-
-                        //  //console.log("hash",_this.popup.location.hash);
-						//  //console.log("location:",_this.popup.location);
-
                             if (_this.popup.location.search || _this.popup.location.hash) {
                                 var query = parseQueryString(_this.popup.location.search.substring(1).replace(/\/$/, ''));
-                             //   //console.log("query",query);
                                 var hash = parseQueryString(_this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-                             //   //console.log("hash",hash);
                                 var params = angular.extend({}, query, hash);
                                 if (params.error) {
                                     reject(new Error(params.error));
