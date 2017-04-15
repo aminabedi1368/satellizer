@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="row">
+        <div class="center-form panel">
+            <div class="panel-body">
+                <h2 class="text-center">verification</h2>
+                <form method="post" ng-submit="verification()" name="loginForm">
+
+                    <div class="form-group has-feedback">
+                        <input class="form-control input-lg" type="text" name="email" ng-model="verificationCode" placeholder="verificationCode" required autofocus>
+                        <span class="ion-at form-control-feedback"></span>
+                    </div>
+                    <button type="submit" ng-disabled="loginForm.$invalid" class="btn btn-lg  btn-block btn-success">verification</button>
+                    <br/>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
